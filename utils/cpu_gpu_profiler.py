@@ -51,7 +51,7 @@ def get_cpu_mem_usage_from_process(pid, cpu_usage):
         return
     proc = psutil.Process(pid)
     if proc.is_running():
-        # The rss, Resident Set Size, is the memory allocated to the process, its unit is byte.
+        # The rss, Resident Set Size, is the memory allocated to the process, its unit is bit.
         cpu_usage.append(proc.memory_info().rss / 1024)
 
 
