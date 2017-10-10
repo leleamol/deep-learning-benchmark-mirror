@@ -73,7 +73,7 @@ if __name__ == '__main__':
     train_sent, vocab = tokenize_text("{}/data/ptb.train.txt".format(os.path.dirname(__file__)),
                                       start_label=start_label,
                                       invalid_label=invalid_label)
-    val_sent, _ = tokenize_text("{}/data/ptb.test.txt".format_map(os.path.dirname(__file__)),
+    val_sent, _ = tokenize_text("{}/data/ptb.test.txt".format(os.path.dirname(__file__)),
                                 vocab=vocab,
                                 start_label=start_label,
                                 invalid_label=invalid_label)
