@@ -26,6 +26,19 @@ RESULT_FILE_PATH = './dlbenchmark_result.json'
 NUMERIC_PATTERN = "(\d+\.\d+|\d+)"
 
 
+class BenchmarkMetricComputeMethod:
+    @staticmethod
+    def compute(metric_compute_method, metric):
+        if metric_compute_method == 'average':
+            return 1.0 * sum(metric) / len(metric)
+        elif metric_compute_method == 'last':
+            return metric[-1]
+        elif metric_compute_method == 'total':
+            return sum(metric)
+        else:
+            raise Exception("This metric compute method is not supported!")
+
+
 class BenchmarkResultManager(object):
     def __init__(self, log_file_location, metric_patterns, metric_names, metric_compute_methods):
         """ Manages holding the map of the result data.
@@ -69,15 +82,10 @@ class BenchmarkResultManager(object):
             if len(metric) == 0:
                 raise Exception("The benchmark job failed or the metric_patterns is not correct!")
             metric = map(self.__get_float_number, metric)
-
-            if self.metric_compute_methods[i] == 'average':
-                metric_result = 1.0 * sum(metric) / len(metric)
-            elif self.metric_compute_methods[i] == 'last':
-                metric_result = metric[-1]
-            elif self.metric_compute_methods[i] == 'total':
-                metric_result = sum(metric)
-            else:
-                raise Exception("This metric compute method is not supported!")
+            metric_result = BenchmarkMetricComputeMethod.compute(
+                metric_compute_method=self.metric_compute_methods[i],
+                metric=metric
+            )
             self.metric_map[name] = metric_result
 
     def save_to(self, result_file_location):
