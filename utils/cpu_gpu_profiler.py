@@ -22,7 +22,8 @@ def gpu_memory_usage_extract(file_name, ret_dict, num_gpus):
         raise
 
     # filter out break line
-    gpu_memory_usage = gpu_memory_usage[gpu_memory_usage.iloc[:,1].str.contains('MiB')]
+    gpu_memory_usage = gpu_memory_usage[~pd.isnull(gpu_memory_usage.iloc[:, 1])]
+    gpu_memory_usage = gpu_memory_usage[gpu_memory_usage.iloc[:, 1].str.contains('MiB')]
 
     # set a default dict to collect gpu mean, var and max usage, default value is an empty list
     record = defaultdict(list)
