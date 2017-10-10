@@ -6,6 +6,7 @@ import pandas as pd
 from collections import defaultdict
 from threading import Event, Thread
 import psutil
+from errors import CommandExecutionError
 
 
 # redirect the GPU memory usage to a file
@@ -107,7 +108,7 @@ class Profiler(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.cpu_mem_repeat_query.stop()
         if len(self.cpu_usage) == 0:
-            raise Exception("Error: The CPU memory collection failed!")
+            raise CommandExecutionError
         cpu_usage = sum(self.cpu_usage) / len(self.cpu_usage)
         self.__ret_dict['cpu_memory_usage'] = cpu_usage
 

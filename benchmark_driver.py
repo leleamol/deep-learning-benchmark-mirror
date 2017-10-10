@@ -17,7 +17,7 @@ except ImportError:
 
 from utils import cpu_gpu_profiler, cfg_process
 # TODO add detailed error/exception handling in the script
-# from utils.errors import
+from utils.errors import MetricComputeMethodError, MetricPatternError
 
 
 CONFIG_TEMPLATE_DIR = './task_config_template.cfg'
@@ -36,7 +36,7 @@ class BenchmarkMetricComputeMethod:
         elif metric_compute_method == 'total':
             return sum(metric)
         else:
-            raise Exception("This metric compute method is not supported!")
+            raise MetricsComputeMethodError("This metric compute method is not supported!")
 
 
 class BenchmarkResultManager(object):
@@ -72,7 +72,7 @@ class BenchmarkResultManager(object):
         if len(matches) == 1:
             return eval(re.findall(NUMERIC_PATTERN, s)[0])
         else:
-            raise Exception("The metric_patterns is not correct!")
+            raise MetricPatternError("Can not find number in the located metric pattern.")
 
     def parse_log(self):
         for i in range(len(metric_patterns)):
@@ -80,7 +80,7 @@ class BenchmarkResultManager(object):
             name = self.metric_names[i]
             metric = re.findall(pattern, self.log_file)
             if len(metric) == 0:
-                raise Exception("The benchmark job failed or the metric_patterns is not correct!")
+                raise MetricPatternError("Can not locate provided metric pattern.")
             metric = map(self.__get_float_number, metric)
             metric_result = BenchmarkMetricComputeMethod.compute(
                 metric_compute_method=self.metric_compute_methods[i],
