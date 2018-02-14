@@ -21,6 +21,7 @@ import argparse, time
 import logging
 logging.basicConfig(level=logging.INFO)
 
+import numpy as np
 import mxnet as mx
 from mxnet import gluon
 from mxnet.gluon import nn
@@ -59,7 +60,8 @@ parser.add_argument('--use-pretrained', action='store_true',
                     help='enable using pretrained model from gluon.')
 parser.add_argument('--kvstore', type=str, default='device',
                     help='kvstore to use for trainer/module.')
-parser.add_argument('--dtype', type=str, default='float32',help='floating point precision to use')
+parser.add_argument('--dtype', type=str, default='float32',
+                    help='precision: float32 or float16')
 parser.add_argument('--log-interval', type=int, default=50, help='Number of batches to wait before logging.')
 opt = parser.parse_args()
 
@@ -167,7 +169,12 @@ def train(epochs, ctx):
 if __name__ == '__main__':
     if opt.mode == 'symbolic':
         data = mx.sym.var('data')
+        if opt.dtype == 'float16':
+            data = mx.sym.Cast(data=data, dtype=np.float16)
+            net.cast(np.float16)
         out = net(data)
+        if opt.dtype == 'float16':
+            out = mx.sym.Cast(data=out, dtype=np.float32)
         softmax = mx.sym.SoftmaxOutput(out, name='softmax')
         mod = mx.mod.Module(softmax, context=[mx.gpu(i) for i in range(gpus)] if gpus > 0 else [mx.cpu()])
         mod.fit(
@@ -177,6 +184,8 @@ if __name__ == '__main__':
             batch_end_callback=mx.callback.Speedometer(batch_size, opt.log_interval)
         )
     else:
+        if opt.dtype == 'float16':
+            net.cast(np.float16)
         if opt.mode == 'hybrid':
             net.hybridize()
         train(opt.epochs, context)

@@ -159,7 +159,7 @@ def benchmark(command_to_execute, metric_patterns,
     result.metric_map = update_metric_map
     result.save_to(RESULT_FILE_PATH)
     # clean up
-    os.remove(log_file_location)
+    #os.remove(log_file_location)
 
 
 if __name__ == '__main__':
