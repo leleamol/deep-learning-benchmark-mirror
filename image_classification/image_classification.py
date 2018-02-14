@@ -179,6 +179,7 @@ if __name__ == '__main__':
         mod = mx.mod.Module(softmax, context=[mx.gpu(i) for i in range(gpus)] if gpus > 0 else [mx.cpu()])
         mod.fit(
             train_data,
+            val_data,
             num_epoch=opt.epochs,
             kvstore=opt.kvstore,
             batch_end_callback=mx.callback.Speedometer(batch_size, opt.log_interval)
