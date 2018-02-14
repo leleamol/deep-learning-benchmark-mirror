@@ -59,6 +59,8 @@ parser.add_argument('--save', type=str, default='model.params',
                     help='path to save the final model')
 parser.add_argument('--mode', type=str, default='imperative',
                     help='mode of the gluon rnn model. (imperative, hybrid)')
+parser.add_argument('--kvstore', type=str, default='device',help='kvstore to use for trainer/module.')
+parser.add_argument('--dtype', type=str, default='float32',help='floating point precision to use')
 args = parser.parse_args()
 
 

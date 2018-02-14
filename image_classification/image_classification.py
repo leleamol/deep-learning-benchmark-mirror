@@ -59,6 +59,7 @@ parser.add_argument('--use-pretrained', action='store_true',
                     help='enable using pretrained model from gluon.')
 parser.add_argument('--kvstore', type=str, default='device',
                     help='kvstore to use for trainer/module.')
+parser.add_argument('--dtype', type=str, default='float32',help='floating point precision to use')
 parser.add_argument('--log-interval', type=int, default=50, help='Number of batches to wait before logging.')
 opt = parser.parse_args()
 
