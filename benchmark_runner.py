@@ -16,9 +16,9 @@ except ImportError:
 
 
 
-# --metrics-policy metrics_paramaters_images --task-name custom.p316xlarge.fp32.bs32 --metrics-suffix nightly --num-gpus 8 --command-to-execute \"Hello world\"
+# --metrics-policy metrics_parameters_images --task-name custom.p316xlarge.fp32.bs32 --metrics-suffix nightly --num-gpus 8 --command-to-execute \"Hello world\"
 CONFIG_TEMPLATE = './task_config_template.cfg'
-CONFIG_DIR = './task_config.cfg'
+
 
 
 
@@ -62,5 +62,3 @@ if __name__ == '__main__':
         framework=args.framework
     )
 
-    # clean up
-    os.remove(CONFIG_DIR)
