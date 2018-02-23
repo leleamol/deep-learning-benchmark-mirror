@@ -24,6 +24,7 @@ CONFIG_DIR = './task_config.cfg'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run a benchmark task.")
+    parser.add_argument('--framework', type=str, help='Framework eg. mxnet')
     parser.add_argument('--metrics-policy', type=str, help='Metrics policy section name e.g. metrics_paramaters_images')
     parser.add_argument('--task-name', type=str, help='Task Name e.g. resnet50_cifar10_symbolic.')
     parser.add_argument('--metrics-suffix', type=str, help='Metrics suffix e.g. --metrics-suffix daily')
