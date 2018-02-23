@@ -19,6 +19,9 @@ CONFIG_TEMPLATE_DIR = './task_config_template.cfg'
 CONFIG_DIR = './task_config.cfg'
 
 
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run a benchmark task.")
     parser.add_argument('--framework', type=str, help='Framework name e.g. mxnet')
@@ -29,6 +32,7 @@ if __name__ == '__main__':
     parser.add_argument('--kvstore', type=str, default='device',help='kvstore to use for trainer/module.')
     parser.add_argument('--dtype', type=str, default='float32',help='floating point precision to use')
       
+    
     
     args = parser.parse_args()
 

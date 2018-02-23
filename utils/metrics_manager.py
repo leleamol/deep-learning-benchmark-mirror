@@ -6,9 +6,10 @@ import json
 import logging
 
 
+
 # TODO add detailed error/exception handling in the script
-from errors import MetricComputeMethodError, MetricPatternError
-import cpu_gpu_profiler
+import utils.errors
+#import utils.cpu_gpu_profiler
 
 NUMERIC_PATTERN = r"(\d+\.\d+|\d+)"
 RESULT_FILE_PATH = './dlbenchmark_result.json'
@@ -23,7 +24,7 @@ class BenchmarkMetricComputeMethod:
         elif metric_compute_method == 'total':
             return sum(metric)
         else:
-            raise MetricComputeMethodError("This metric compute method is not supported!")
+            raise utils.errors.MetricComputeMethodError("This metric compute method is not supported!")
 
 
 class BenchmarkResultManager(object):
@@ -58,7 +59,7 @@ class BenchmarkResultManager(object):
         if len(matches) == 1:
             return eval(re.findall(NUMERIC_PATTERN, s)[0])
         else:
-            raise MetricPatternError("Can not find number in the located metric pattern.")
+            raise utils.errors.MetricPatternError("Can not find number in the located metric pattern.")
 
     def parse_log(self):
         for i in range(len(self.metric_patterns)):
@@ -66,7 +67,7 @@ class BenchmarkResultManager(object):
             name = self.metric_names[i]
             metric = re.findall(pattern, self.log_file)
             if len(metric) == 0:
-                raise MetricPatternError("Can not locate provided metric pattern.")
+                raise utils.errors.MetricPatternError("Can not locate provided metric pattern.")
             metric = map(self.__get_float_number, metric)
             metric_result = BenchmarkMetricComputeMethod.compute(
                 metric_compute_method=self.metric_compute_methods[i],
@@ -81,6 +82,7 @@ class BenchmarkResultManager(object):
             f.write(json.dumps(self.metric_map))
 
 
+    
 def benchmark(command_to_execute, metric_patterns,
               metric_names, metric_compute_methods,
               num_gpus, task_name, suffix, framework):
@@ -116,7 +118,7 @@ def benchmark(command_to_execute, metric_patterns,
             universal_newlines=True,
         )
     # when num_gpus == 0, the cpu_gpu_profiler will only profile cpu usage
-    with cpu_gpu_profiler.Profiler(cpu_gpu_memory_usage, num_gpus, process.pid):
+    with utils.cpu_gpu_profiler.Profiler(cpu_gpu_memory_usage, num_gpus, process.pid):
         process.communicate()
     log_file.close()
 
