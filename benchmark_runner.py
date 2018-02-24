@@ -1,7 +1,7 @@
 
 from __future__ import print_function
 import argparse
-import os
+from ast import literal_eval
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -33,23 +33,19 @@ if __name__ == '__main__':
     parser.add_argument('--data-set', type=str, help='The data set to use for benchmarking, eg. imagenet')
     
     args = parser.parse_args()    
-
    
     if(args.data_set == 'imagenet'): 
         data_manager.getImagenetData()
-     
 
     config.read(CONFIG_TEMPLATE)
 
     for name, value in config.items(args.metrics_policy):
         if(name == 'patterns'):
-            metric_patterns = value
+            metric_patterns = literal_eval(value)
         elif(name == 'metrics'):
-            metric_names= value
+            metric_names= literal_eval(value)
         else:
-            metric_compute_methods = value
-        
-    
+            metric_compute_methods = literal_eval(value)
 
     metrics_manager.benchmark(
         command_to_execute=args.command_to_execute,
