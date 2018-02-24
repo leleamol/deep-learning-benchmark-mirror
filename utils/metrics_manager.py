@@ -9,7 +9,7 @@ import logging
 
 # TODO add detailed error/exception handling in the script
 import utils.errors
-#import utils.cpu_gpu_profiler
+import utils.cpu_gpu_profiler
 
 NUMERIC_PATTERN = r"(\d+\.\d+|\d+)"
 RESULT_FILE_PATH = './dlbenchmark_result.json'
