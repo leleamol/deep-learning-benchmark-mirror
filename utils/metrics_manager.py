@@ -130,13 +130,15 @@ def benchmark(command_to_execute, metric_patterns,
         except:
             err_file.write(sys.exc_info()[0])    
          
-    if(os.stat(err_file_location).st_size ==0):
-        os.remove(err_file_location)
     
     # when num_gpus == 0, the cpu_gpu_profiler will only profile cpu usage
     with utils.cpu_gpu_profiler.Profiler(cpu_gpu_memory_usage, num_gpus, process.pid):
         process.communicate()
     log_file.close()
+    
+    if(os.stat(err_file_location).st_size ==0):
+        os.remove(err_file_location)
+
 
     result = BenchmarkResultManager(
         log_file_location=log_file_location,
