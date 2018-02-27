@@ -4,7 +4,7 @@ import subprocess
 import re
 import json
 import logging
-import sys
+
 
 
 # TODO add detailed error/exception handling in the script
@@ -109,36 +109,18 @@ def benchmark(command_to_execute, metric_patterns,
     log_file = open(log_file_location, 'w')
     logging.info("Executing Command: %s", command_to_execute)
 
-    err_file_location = task_name + ".err" 
-    
     cpu_gpu_memory_usage = {}
-    
-    with open(err_file_location, 'w') as err_file:
-        
-        try:
-            process = subprocess.Popen(
+    process = subprocess.Popen(
             command_to_execute,
             shell=True,
             stdout=log_file,
-            stderr=err_file,
+            stderr=subprocess.STDOUT,
             universal_newlines=True,
-            )
-        except OSError as osException:
-            err_file.write(osException)
-        except ValueError as valErrorException:
-            err_file.write(valErrorException)
-        except:
-            err_file.write(sys.exc_info()[0])    
-         
-    
+        )
     # when num_gpus == 0, the cpu_gpu_profiler will only profile cpu usage
     with utils.cpu_gpu_profiler.Profiler(cpu_gpu_memory_usage, num_gpus, process.pid):
         process.communicate()
     log_file.close()
-    
-    if(os.stat(err_file_location).st_size ==0):
-        os.remove(err_file_location)
-
 
     result = BenchmarkResultManager(
         log_file_location=log_file_location,
