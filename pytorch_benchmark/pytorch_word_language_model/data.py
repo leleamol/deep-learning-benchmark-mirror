@@ -1,5 +1,6 @@
 import os
 import torch
+import subprocess
 
 class Dictionary(object):
     def __init__(self):
@@ -19,13 +20,18 @@ class Dictionary(object):
 class Corpus(object):
     def __init__(self, path):
         self.dictionary = Dictionary()
-        self.train = self.tokenize(os.path.join(path, 'ptb.train.txt'))
-        self.valid = self.tokenize(os.path.join(path, 'ptb.valid.txt'))
-        self.test = self.tokenize(os.path.join(path, 'ptb.test.txt'))
+        self.train = self.tokenize(os.path.join(path, 'train.txt'))
+        self.valid = self.tokenize(os.path.join(path, 'valid.txt'))
+        self.test = self.tokenize(os.path.join(path, 'test.txt'))
 
     def tokenize(self, path):
         """Tokenizes a text file."""
-        assert os.path.exists(path)
+        try:
+            assert os.path.exists(path)
+        except AssertionError:
+            subprocess.call(['{}/get_ptb_data.sh'.format(os.path.dirname(__file__))])
+            assert os.path.exists(path)
+
         # Add words to the dictionary
         with open(path, 'r') as f:
             tokens = 0
