@@ -2,12 +2,6 @@
 import argparse
 import time
 import math
-import torch
-import torch.nn as nn
-from torch.autograd import Variable
-
-import data
-import model
 
 parser = argparse.ArgumentParser(description='PyTorch RNN/LSTM Language Model')
 parser.add_argument('--data', type=str, default='./data/ptb/',
@@ -22,11 +16,11 @@ parser.add_argument('--nlayers', type=int, default=2,
                     help='number of layers')
 parser.add_argument('--lr', type=float, default=20,
                     help='initial learning rate')
-parser.add_argument('--clip', type=float, default=0.25,
+parser.add_argument('--clip', type=float, default=0.2,
                     help='gradient clipping')
 parser.add_argument('--epochs', type=int, default=40,
                     help='upper epoch limit')
-parser.add_argument('--batch_size', type=int, default=20, metavar='N',
+parser.add_argument('--batch-size', type=int, default=32, metavar='N',
                     help='batch size')
 parser.add_argument('--bptt', type=int, default=35,
                     help='sequence length')
@@ -34,21 +28,36 @@ parser.add_argument('--dropout', type=float, default=0.2,
                     help='dropout applied to layers (0 = no dropout)')
 parser.add_argument('--tied', action='store_true',
                     help='tie the word embedding and softmax weights')
+parser.add_argument('--gpus', type=int, default=0,
+                    help='number of gpus to use.')
 parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
-parser.add_argument('--cuda', action='store_true',
-                    help='use CUDA')
 parser.add_argument('--log-interval', type=int, default=200, metavar='N',
                     help='report interval')
 parser.add_argument('--save', type=str,  default='model.pt',
                     help='path to save the final model')
 args = parser.parse_args()
 
+
+if args.gpus > 0:
+    import os
+
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"] = ','.join([str(i) for i in range(args.gpus)])
+
+
+import torch
+import torch.nn as nn
+from torch.autograd import Variable
+
+import data
+import model
+
 # Set the random seed manually for reproducibility.
 torch.manual_seed(args.seed)
 if torch.cuda.is_available():
-    if not args.cuda:
-        print("WARNING: You have a CUDA device, so you should probably run with --cuda")
+    if args.gpus <= 0:
+        print("WARNING: You have a CUDA device, so you should probably run with --gpus")
     else:
         torch.cuda.manual_seed(args.seed)
 
@@ -77,7 +86,7 @@ def batchify(data, bsz):
     data = data.narrow(0, 0, nbatch * bsz)
     # Evenly divide the data across the bsz batches.
     data = data.view(bsz, -1).t().contiguous()
-    if args.cuda:
+    if args.gpus > 0:
         data = data.cuda()
     return data
 
@@ -93,8 +102,16 @@ test_data = batchify(corpus.test, eval_batch_size)
 ntokens = len(corpus.dictionary)
 model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.tied)
 
-if args.cuda:
-    model.cuda()
+if args.gpus > 0:
+    if torch.cuda.device_count() <= args.gpus:
+        print('Using {} GPU{}'.format(args.gpus, 's' if args.gpus > 1 else ''))
+
+        if args.gpus > 1:
+            model = nn.DataParallel(model, dim=1).cuda()
+        else:
+            model = model.cuda()
+    else:
+        raise ValueError("More GPUs specified than available")
 
 criterion = nn.CrossEntropyLoss()
 
@@ -132,7 +149,10 @@ def evaluate(data_source):
     model.eval()
     total_loss = 0
     ntokens = len(corpus.dictionary)
-    hidden = model.init_hidden(eval_batch_size)
+    if isinstance(model, torch.nn.parallel.DataParallel):
+        hidden = model.module.init_hidden(eval_batch_size)
+    else:
+        hidden = model.init_hidden(eval_batch_size)
     for i in range(0, data_source.size(0) - 1, args.bptt):
         data, targets = get_batch(data_source, i, evaluation=True)
         output, hidden = model(data, hidden)
@@ -148,7 +168,10 @@ def train():
     total_loss = 0
     start_time = time.time()
     ntokens = len(corpus.dictionary)
-    hidden = model.init_hidden(args.batch_size)
+    if isinstance(model, torch.nn.parallel.DataParallel):
+        hidden = model.module.init_hidden(args.batch_size)
+    else:
+        hidden = model.init_hidden(args.batch_size)
     for batch, i in enumerate(range(0, train_data.size(0) - 1, args.bptt)):
         data, targets = get_batch(train_data, i)
         # Starting each batch, we detach the hidden state from how it was previously produced.
