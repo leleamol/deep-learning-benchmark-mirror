@@ -61,6 +61,21 @@ class BenchmarkResultManager(object):
         else:
             raise utils.errors.MetricPatternError("Can not find number in the located metric pattern.")
 
+    @staticmethod
+    def uptime():
+
+        uptimeRaw = subprocess.check_output('uptime').decode().replace(',','')
+        days = int(uptimeRaw.split()[2])
+        if 'min' in uptimeRaw:
+            hours = 0
+            minutes = int(uptimeRaw[4])
+        else:
+            hours, minutes = map(int,uptimeRaw.split()[4].split(':'))
+            totalsecs = days*24*60*60 + hours*60*60 + minutes*60    
+        return totalsecs
+
+    
+
     def parse_log(self):
         for i in range(len(self.metric_patterns)):
             pattern = self.metric_patterns[i]
@@ -74,6 +89,7 @@ class BenchmarkResultManager(object):
                 metric=metric
             )
             self.metric_map[name] = metric_result
+        self.metric_map['uptime_in_seconds'] = self.uptime()
 
     def save_to(self, result_file_location):
         if os.path.isfile(result_file_location):
