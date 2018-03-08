@@ -108,7 +108,7 @@ elif dataset == 'dummy':
         train_data, val_data = dummy_iterator(batch_size, (3, 224, 224))
 
 
-def test(ctx):
+def test(ctx, dtype):
     metric = mx.metric.Accuracy()
     val_data.reset()
     for batch in val_data:
@@ -116,12 +116,14 @@ def test(ctx):
         label = gluon.utils.split_and_load(batch.label[0], ctx_list=ctx, batch_axis=0)
         outputs = []
         for x in data:
+            if dtype == 'float16':
+                x = x.astype('float16')
             outputs.append(net(x))
         metric.update(label, outputs)
     return metric.get()
 
 
-def train(epochs, ctx):
+def train(epochs, ctx, dtype):
     if isinstance(ctx, mx.Context):
         ctx = [ctx]
     net.initialize(mx.init.Xavier(magnitude=2.24), ctx=ctx)
@@ -142,6 +144,8 @@ def train(epochs, ctx):
             Ls = []
             with ag.record():
                 for x, y in zip(data, label):
+                    if dtype == 'float16':
+                        x = x.astype('float16')
                     z = net(x)
                     L = loss(z, y)
                     # store the loss and do backward after we have done forward
@@ -161,7 +165,7 @@ def train(epochs, ctx):
         name, acc = metric.get()
         logging.info('[Epoch %d] training: %s=%f'%(epoch, name, acc))
         logging.info('[Epoch %d] time cost: %f'%(epoch, time.time()-tic))
-        name, val_acc = test(ctx)
+        name, val_acc = test(ctx, dtype)
         logging.info('[Epoch %d] validation: %s=%f'%(epoch, name, val_acc))
 
     net.save_params('image-classifier-%s-%d.params'%(opt.model, epochs))
@@ -189,4 +193,4 @@ if __name__ == '__main__':
             net.cast(np.float16)
         if opt.mode == 'hybrid':
             net.hybridize()
-        train(opt.epochs, context)
+        train(opt.epochs, context, opt.dtype)
