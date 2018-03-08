@@ -82,7 +82,7 @@ class BenchmarkResultManager(object):
                 metric=metric
             )
             self.metric_map[name] = metric_result
-        #self.metric_map['uptime_in_seconds'] = self.uptime()
+        self.metric_map['uptime_in_seconds'] = self.uptime()
 
     def save_to(self, result_file_location):
         if os.path.isfile(result_file_location):
