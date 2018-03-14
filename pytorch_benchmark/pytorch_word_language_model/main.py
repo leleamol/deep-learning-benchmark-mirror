@@ -201,12 +201,12 @@ if __name__ == '__main__':
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
-        for epoch in range(1, args.epochs+1):
+        for epoch in range(args.epochs):
             epoch_start_time = time.time()
             train()
             val_loss = evaluate(val_data)
             print('-' * 89)
-            print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
+            print('| end of epoch {:3d} | time cost {:5.2f}s | valid loss {:5.2f} | '
                     'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
                                                val_loss, math.exp(val_loss)))
             print('-' * 89)
@@ -215,6 +215,13 @@ if __name__ == '__main__':
                 with open(args.save, 'wb') as f:
                     torch.save(model, f)
                 best_val_loss = val_loss
+
+                # Run on test data.
+                test_loss = evaluate(test_data)
+                print('=' * 89)
+                print('| test loss {:5.2f} | test ppl {:8.2f}'.format(
+                    test_loss, math.exp(test_loss)))
+                print('=' * 89)
             else:
                 # Anneal the learning rate if no improvement has been seen in the validation dataset.
                 lr /= 4.0

@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
@@ -37,10 +38,10 @@ class RNNModel(nn.Module):
         self.nlayers = nlayers
 
     def init_weights(self):
-        initrange = 0.1
-        self.encoder.weight.data.uniform_(-initrange, initrange)
+        # initrange = 0.1
+        nn.init.xavier_uniform(self.encoder.weight)
+        nn.init.xavier_uniform(self.decoder.weight)
         self.decoder.bias.data.fill_(0)
-        self.decoder.weight.data.uniform_(-initrange, initrange)
 
     def forward(self, input, hidden):
         emb = self.drop(self.encoder(input))
