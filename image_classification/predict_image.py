@@ -91,10 +91,10 @@ if  __name__ == '__main__':
     print(opt)
 
     # Following sleep is added so that process runs until cpu-gpu profiler process starts.
-    time.sleep(60)
     infer = InferenceTesting(opt)
     infer.downloadModel()
     infer.predict()
+    time.sleep(10)
     print ("Done")
-
+    exit()
 
