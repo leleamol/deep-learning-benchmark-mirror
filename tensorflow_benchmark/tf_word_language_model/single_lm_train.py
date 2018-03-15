@@ -9,10 +9,10 @@ from language_model import LM
 from run_utils import run_train, run_eval, run_infer
 
 tf.flags.DEFINE_string("logdir", "lm1b", "Logging directory.")
-tf.flags.DEFINE_string("datadir", None, "Logging directory.")
+tf.flags.DEFINE_string("datadir", "1-billion-word-language-modeling-benchmark-r13output", "Data directory.")
 tf.flags.DEFINE_string("mode", "train", "Whether to run 'train' or 'eval' model.")
 tf.flags.DEFINE_string("hpconfig", "", "Overrides default hyper-parameters.")
-tf.flags.DEFINE_integer("num_gpus", 8, "Number of GPUs used.")
+tf.flags.DEFINE_integer("gpus", 8, "Number of GPUs used.")
 tf.flags.DEFINE_integer("eval_steps", 70, "Number of eval steps.")
 
 FLAGS = tf.flags.FLAGS
@@ -23,7 +23,7 @@ def main(_):
     Start either train or eval. Note hardcoded parts of path for training and eval data
     """
     hps = LM.get_default_hparams().parse(FLAGS.hpconfig)
-    hps._set("num_gpus", FLAGS.num_gpus)
+    hps._set("num_gpus", FLAGS.gpus)
     print('*****HYPER PARAMETERS*****')
     print(hps)
     print('**************************')

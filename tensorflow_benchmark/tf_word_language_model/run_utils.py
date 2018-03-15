@@ -4,6 +4,7 @@ sys.stdout=sys.stderr
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.client import timeline
+import math
 
 from language_model import LM
 from common import CheckpointLoader
@@ -92,8 +93,9 @@ def run_train(dataset, hps, logdir, ps_device, task=0, master=""):
                 num_words = hps.batch_size * hps.num_gpus * hps.num_steps
                 wps = (cur_global_step - prev_global_step) * num_words / (cur_time - prev_time)
                 prev_global_step = cur_global_step
-                print("Iteration %d, time = %.2fs, wps = %.0f, train loss = %.4f" % (
-                    cur_global_step, cur_time - prev_time, wps, fetched[1]))
+                ppl = math.exp(fetched[1]) if fetched[1] < 100 else 1e36
+                print("Iteration %d, time = %.2fs, wps = %.0f, train loss = %.4f, ppl = %.4f" % (
+                    cur_global_step, cur_time - prev_time, wps, fetched[1], ppl))
                 prev_time = cur_time
             if local_step >= hps.max_steps:
                 break
