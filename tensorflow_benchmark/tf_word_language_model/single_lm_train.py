@@ -9,7 +9,7 @@ from language_model import LM
 from run_utils import run_train, run_eval, run_infer
 
 tf.flags.DEFINE_string("logdir", "lm1b", "Logging directory.")
-tf.flags.DEFINE_string("datadir", "1-billion-word-language-modeling-benchmark-r13output", "Data directory.")
+tf.flags.DEFINE_string("datadir", "1-billion-word-language-modeling-benchmark-r13output", "Logging directory.")
 tf.flags.DEFINE_string("mode", "train", "Whether to run 'train' or 'eval' model.")
 tf.flags.DEFINE_string("hpconfig", "", "Overrides default hyper-parameters.")
 tf.flags.DEFINE_integer("gpus", 8, "Number of GPUs used.")
@@ -17,6 +17,13 @@ tf.flags.DEFINE_integer("eval_steps", 70, "Number of eval steps.")
 
 FLAGS = tf.flags.FLAGS
 
+def getOneBillionWordData(data_dir):
+    if not os.path.exists(os.path.join(data_dir, "training-monolingual.tokenized.shuffled")):
+        os.system("wget -q https://s3.amazonaws.com/one-billion-word-dataset/1-billion-word-language-modeling-benchmark-r13output.tar.gz -P tensorflow_benchmark/tf_word_language_model/")
+        os.system("tar -xzvf tensorflow_benchmark/tf_word_language_model/1-billion-word-language-modeling-benchmark-r13output.tar.gz -C tensorflow_benchmark/tf_word_language_model/")
+        return "tensorflow_benchmark/tf_word_language_model/1-billion-word-language-modeling-benchmark-r13output"
+    else:
+        return data_dir
 
 def main(_):
     """
@@ -27,6 +34,8 @@ def main(_):
     print('*****HYPER PARAMETERS*****')
     print(hps)
     print('**************************')
+
+    FLAGS.datadir = getOneBillionWordData(FLAGS.datadir)
 
     vocab = Vocabulary.from_file(os.path.join(FLAGS.datadir, "1b_word_vocab.txt"))
 

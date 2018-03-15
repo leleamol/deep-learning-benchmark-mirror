@@ -145,9 +145,9 @@ def run_eval(dataset, hps, logdir, mode, num_eval_steps):
                 loss_den += 1 # ???
                 #loss_den += w.mean()
                 loss = loss_nom / loss_den
-                sys.stdout.write("%d: %.3f (%.3f) ... " % (i, loss, np.exp(loss)))
-                sys.stdout.flush()
-            sys.stdout.write("\n")
+            #     sys.stdout.write("%d: %.3f (%.3f) ... " % (i, loss, np.exp(loss)))
+            #     sys.stdout.flush()
+            # sys.stdout.write("\n")
 
             log_perplexity = loss_nom / loss_den
             print("Results at %d: log_perplexity = %.3f perplexity = %.3f" % (
