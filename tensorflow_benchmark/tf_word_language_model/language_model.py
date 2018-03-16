@@ -231,7 +231,7 @@ class LM(object):
             average_params=True,
             run_profiler=False,
             do_summaries=False,
-            max_time=180,
+            epochs=5,
 
             fact_size=None,
             fnon_linearity="none",

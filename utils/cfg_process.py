@@ -45,6 +45,13 @@ def generate_cfg(cfg_template, cfg_path, **infra_spec):
                     cmd = re.sub("--num-epochs \d+", "--num-epochs %d" % infra_spec["epochs"], cmd)
                 if "kvstore" in infra_spec:
                     cmd = re.sub("--kv-store device", "--kv-store %s" % infra_spec["kvstore"], cmd)
+            elif "single_lm_train" in config.get(selected_task, "command_to_execute"):
+                if "num_gpus" in infra_spec and infra_spec["num_gpus"] is not None and infra_spec["num_gpus"] > 0:
+                    cmd = re.sub("--gpus=\d+", "--gpus=%d" % infra_spec["num_gpus"], cmd)
+                elif "num_gpus" in infra_spec:
+                    cmd = re.sub("--gpus \d+", "", cmd)
+                if "epochs" in infra_spec and infra_spec["epochs"] is not None and infra_spec["epochs"] > 0:
+                    cmd = re.sub("--epochs=\d+", "--epochs=%d" % infra_spec["epochs"], cmd)
             else:
                 if "num_gpus" in infra_spec and infra_spec["num_gpus"] is not None and infra_spec["num_gpus"] > 0:
                     cmd = re.sub("--gpus \d+", "--gpus %d" % infra_spec["num_gpus"], cmd)

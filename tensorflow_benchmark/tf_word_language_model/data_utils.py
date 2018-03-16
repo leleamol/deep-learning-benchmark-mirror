@@ -86,8 +86,11 @@ class Dataset(object):
 
     def _sentence_stream(self, file_stream):
         for file_name in file_stream:
-            for sentence in self._parse_file(file_name):
-                yield sentence
+            if isinstance(file_name, int):
+                yield file_name
+            else:
+                for sentence in self._parse_file(file_name):
+                    yield sentence
 
     def _iterate(self, sentences, batch_size, num_steps):
         streams = [None] * batch_size
@@ -104,7 +107,11 @@ class Dataset(object):
                 try:
                     while tokens_filled < num_steps:
                         if streams[i] is None or len(streams[i]) <= 1:
-                            streams[i] = next(sentences)
+                            temp = next(sentences)
+                            if isinstance(temp, int):
+                                yield temp, None
+                                temp = next(sentences)
+                            streams[i] = temp
                         num_tokens = min(len(streams[i]) - 1, num_steps - tokens_filled)
                         x[i, tokens_filled:tokens_filled+num_tokens] = streams[i][:num_tokens]
                         y[i, tokens_filled:tokens_filled + num_tokens] = streams[i][1:num_tokens+1]
@@ -136,6 +143,7 @@ class Dataset(object):
                 for file_name in file_patterns:
                     yield file_name
                 print('Done epoch: %s' % epoch_num)
-                epoch_num += 1                
+                yield epoch_num
+                epoch_num += 1
         for value in self._iterate(self._sentence_stream(file_stream()), batch_size, num_steps):
             yield value

@@ -10,7 +10,7 @@ from language_model import LM
 from common import CheckpointLoader
 
 
-def run_train(dataset, hps, logdir, ps_device, task=0, master=""):
+def run_train(dataset, hps, logdir, ps_device, eval_dataset, task=0, master=""):
     with tf.variable_scope("model"):
         model = LM(hps, "train", ps_device)
     stime = time.time()
@@ -49,13 +49,13 @@ def run_train(dataset, hps, logdir, ps_device, task=0, master=""):
         #        print("Current step is %d. Waiting until: %d" % (step, waiting_until_step))
         #    time.sleep(20.0)
 	
-
+        cur_epoch = 0
         local_step = 0
         prev_global_step = sess.run(model.global_step)
         cur_global_step = 0
         prev_time = time.time()
         data_iterator = dataset.iterate_forever(hps.batch_size * hps.num_gpus, hps.num_steps)
-        while not sv.should_stop() and (time.time() - stime) < hps.max_time:
+        while not sv.should_stop() and cur_epoch < hps.epochs:
             fetches = [model.global_step, model.loss, model.train_op]
             # Chief worker computes summaries every 100 steps.
             should_compute_summary = (task == 0  and local_step % 100 == 0)
@@ -64,6 +64,25 @@ def run_train(dataset, hps, logdir, ps_device, task=0, master=""):
 
             #x, y, w = next(data_iterator)
             x, y = next(data_iterator)
+            epoch_done = isinstance(x, int)
+
+            if epoch_done:
+                cur_epoch = int(x)
+                eval_data_iterator = eval_dataset.iterate_once(hps.batch_size * hps.num_gpus, hps.num_steps)
+                loss_nom = 0.0
+                loss_den = 0.0
+
+                for i, (x, y) in enumerate(eval_data_iterator):
+                    loss = sess.run(model.loss, {model.x: x, model.y: y})
+                    loss_nom += loss
+                    loss_den += 1
+                    loss = loss_nom / loss_den
+
+                log_perplexity = loss_nom / loss_den
+                print("Results after epoch %d: log_perplexity = %.3f perplexity = %.3f" % (
+                    cur_epoch, log_perplexity, np.exp(log_perplexity)))
+                x, y = next(data_iterator)
+
             should_run_profiler = (hps.run_profiler and task == 0 and local_step % 1000 == 13)
             if should_run_profiler:
                 run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
@@ -88,7 +107,7 @@ def run_train(dataset, hps, logdir, ps_device, task=0, master=""):
             if should_compute_summary:
                 sv.summary_computed(sess, fetched[-1])
 
-            if local_step < 10 or local_step % 20 == 0:
+            if local_step < 10 or local_step % 100 == 0:
                 cur_time = time.time()
                 num_words = hps.batch_size * hps.num_gpus * hps.num_steps
                 wps = (cur_global_step - prev_global_step) * num_words / (cur_time - prev_time)
