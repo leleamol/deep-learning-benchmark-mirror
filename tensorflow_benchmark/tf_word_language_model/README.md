@@ -8,11 +8,6 @@ This code was forked from https://github.com/rafaljozefowicz/lm and contains "BI
 Current code runs on Tensorflow r1.5 and supports multi-GPU data parallelism using synchronized gradient updates.
 
 # Perplexity
-~~On One Billion Words benchmark using 8 GPUs in one DGX-1, BIG G-LSTM G4 was able to achieve 24.29 after 2 weeks of training and 23.36 after 3 weeks.~~
-
-__On 02/06/2018 We found an issue with our experimental setup which makes perplexity numbers listed in the paper invalid.__
-
-__We are currently re-running the experiments__ See current numbers in the table below.
 
 On DGX Station, after 1 week of training using all 4 GPUs (Tesla V100) and batch size of 256 per GPU:
 
@@ -26,12 +21,12 @@ On DGX Station, after 1 week of training using all 4 GPUs (Tesla V100) and batch
 
 
 ## Dependencies
-* TensorFlow r1.5
+* TensorFlow r1.6
 * Python 2.7 (should work with Python 3 too)
 * 1B Word Benchmark Dataset (https://github.com/ciprian-chelba/1-billion-word-language-modeling-benchmark to get data)
 
 ## To run
-Assuming the data directory is in: `/raid/okuchaiev/Data/LM1B/1-billion-word-language-modeling-benchmark-r13output/`, execute:
+Assuming the data directory is in: `/raid/ubuntu/Data/LM1B/1-billion-word-language-modeling-benchmark-r13output/`, execute:
 
 ```
 export CUDA_VISIBLE_DEVICES=0,1,2,3
@@ -39,9 +34,9 @@ export CUDA_VISIBLE_DEVICES=0,1,2,3
 SECONDS=604800
 LOGSUFFIX=FLSTM-F512-1week
 
-python /home/okuchaiev/repos/f-lm/single_lm_train.py --logdir=/raid/okuchaiev/Workspace/LM/GLSTM-G4/$LOGSUFFIX --num_gpus=4 --datadir=/raid/okuchaiev/Data/LM/LM1B/1-billion-word-language-modeling-benchmark-r13output/ --hpconfig run_profiler=False,float16_rnn=False,epochs=5,num_steps=20,num_shards=8,num_layers=2,learning_rate=0.2,max_grad_norm=1,keep_prob=0.9,emb_size=1024,projected_size=1024,state_size=8192,num_sampled=8192,batch_size=256,fact_size=512  >> train_$LOGSUFFIX.log 2>&1
+python /home/ubuntu/repos/f-lm/single_lm_train.py --logdir=/raid/ubuntu/Workspace/LM/GLSTM-G4/$LOGSUFFIX --num_gpus=4 --epochs=5 --datadir=/raid/ubuntu/Data/LM/LM1B/1-billion-word-language-modeling-benchmark-r13output/ --hpconfig run_profiler=False,float16_rnn=False,epochs=5,num_steps=20,num_shards=8,num_layers=2,learning_rate=0.2,max_grad_norm=1,keep_prob=0.9,emb_size=1024,projected_size=1024,state_size=8192,num_sampled=8192,batch_size=256,fact_size=512  >> train_$LOGSUFFIX.log 2>&1
 
-python /home/okuchaiev/repos/f-lm/single_lm_train.py --logdir=/raid/okuchaiev/Workspace/LM/GLSTM-G4/$LOGSUFFIX --num_gpus=1 --mode=eval_full --datadir=/raid/okuchaiev/Data/LM/LM1B/1-billion-word-language-modeling-benchmark-r13output/ --hpconfig run_profiler=False,float16_rnn=False,epochs=5,num_steps=20,num_shards=8,num_layers=2,learning_rate=0.2,max_grad_norm=1,keep_prob=0.9,emb_size=1024,projected_size=1024,state_size=8192,num_sampled=8192,batch_size=1,fact_size=512
+python /home/ubuntu/repos/f-lm/single_lm_train.py --logdir=/raid/ubuntu/Workspace/LM/GLSTM-G4/$LOGSUFFIX --num_gpus=1 --epochs=5 --mode=eval_full --datadir=/raid/ubuntu/Data/LM/LM1B/1-billion-word-language-modeling-benchmark-r13output/ --hpconfig run_profiler=False,float16_rnn=False,epochs=5,num_steps=20,num_shards=8,num_layers=2,learning_rate=0.2,max_grad_norm=1,keep_prob=0.9,emb_size=1024,projected_size=1024,state_size=8192,num_sampled=8192,batch_size=1,fact_size=512
 
 ```
 
