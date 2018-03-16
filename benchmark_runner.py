@@ -46,6 +46,8 @@ if __name__ == '__main__':
             metric_names= literal_eval(value)
         else:
             metric_compute_methods = literal_eval(value)
+            
+    metrics_manager.BenchmarkResultManager.uptime()        
 
     metrics_manager.benchmark(
         command_to_execute=args.command_to_execute,

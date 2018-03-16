@@ -61,6 +61,14 @@ class BenchmarkResultManager(object):
         else:
             raise utils.errors.MetricPatternError("Can not find number in the located metric pattern.")
 
+    @staticmethod
+    def uptime():
+        with open('/proc/uptime', 'r') as f:
+            uptime_seconds = float(f.readline().split()[0])
+        return uptime_seconds
+
+    
+
     def parse_log(self):
         for i in range(len(self.metric_patterns)):
             pattern = self.metric_patterns[i]
@@ -74,6 +82,7 @@ class BenchmarkResultManager(object):
                 metric=metric
             )
             self.metric_map[name] = metric_result
+        self.metric_map['uptime_in_seconds'] = self.uptime()
 
     def save_to(self, result_file_location):
         if os.path.isfile(result_file_location):
