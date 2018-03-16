@@ -72,7 +72,8 @@ class InferenceTesting(object):
         for i in range(self.iterations):
             tic = time.time()
             self.mod.forward(self.Batch([mx.nd.array(img)]))
-            print ("Prediction-Time: {} seconds".format(time.time() - tic))
+            pred_time_ms = (time.time() - tic) * 1000
+            print ("Prediction-Time: {} milliseconds".format(pred_time_ms))
 
 if  __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a model for image classification.')
