@@ -135,7 +135,7 @@ class Dataset(object):
 
     def iterate_forever(self, batch_size, num_steps):
         def file_stream():
-            epoch_num = 0
+            epoch_num = 1
             while True:
                 file_patterns = glob.glob(self._file_pattern)
                 if not self._deterministic:

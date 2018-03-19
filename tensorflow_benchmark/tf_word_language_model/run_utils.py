@@ -55,7 +55,7 @@ def run_train(dataset, hps, logdir, ps_device, eval_dataset, task=0, master=""):
         cur_global_step = 0
         prev_time = time.time()
         data_iterator = dataset.iterate_forever(hps.batch_size * hps.num_gpus, hps.num_steps)
-        while not sv.should_stop() and cur_epoch < hps.epochs:
+        while not sv.should_stop():
             fetches = [model.global_step, model.loss, model.train_op]
             # Chief worker computes summaries every 100 steps.
             should_compute_summary = (task == 0  and local_step % 100 == 0)
@@ -81,7 +81,11 @@ def run_train(dataset, hps, logdir, ps_device, eval_dataset, task=0, master=""):
                 log_perplexity = loss_nom / loss_den
                 print("Results after epoch %d: log_perplexity = %.3f perplexity = %.3f" % (
                     cur_epoch, log_perplexity, np.exp(log_perplexity)))
+
                 x, y = next(data_iterator)
+
+            if cur_epoch >= hps.epochs:
+                break
 
             should_run_profiler = (hps.run_profiler and task == 0 and local_step % 1000 == 13)
             if should_run_profiler:
