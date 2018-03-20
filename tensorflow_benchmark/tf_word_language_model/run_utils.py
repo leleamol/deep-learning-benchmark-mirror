@@ -68,19 +68,19 @@ def run_train(dataset, hps, logdir, ps_device, eval_dataset, task=0, master=""):
 
             if epoch_done:
                 cur_epoch = int(x)
-                eval_data_iterator = eval_dataset.iterate_once(hps.batch_size * hps.num_gpus, hps.num_steps)
-                loss_nom = 0.0
-                loss_den = 0.0
-
-                for i, (x, y) in enumerate(eval_data_iterator):
-                    loss = sess.run(model.loss, {model.x: x, model.y: y})
-                    loss_nom += loss
-                    loss_den += 1
-                    loss = loss_nom / loss_den
-
-                log_perplexity = loss_nom / loss_den
-                print("Results after epoch %d: log_perplexity = %.3f perplexity = %.3f" % (
-                    cur_epoch, log_perplexity, np.exp(log_perplexity)))
+                # eval_data_iterator = eval_dataset.iterate_once(hps.batch_size * hps.num_gpus, hps.num_steps)
+                # loss_nom = 0.0
+                # loss_den = 0.0
+                #
+                # for i, (x, y) in enumerate(eval_data_iterator):
+                #     loss = sess.run(model.loss, {model.x: x, model.y: y})
+                #     loss_nom += loss
+                #     loss_den += 1
+                #     loss = loss_nom / loss_den
+                #
+                # log_perplexity = loss_nom / loss_den
+                # print("Results after epoch %d: log_perplexity = %.3f perplexity = %.3f" % (
+                #     cur_epoch, log_perplexity, np.exp(log_perplexity)))
 
                 x, y = next(data_iterator)
 
