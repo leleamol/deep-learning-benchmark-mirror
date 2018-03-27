@@ -22,7 +22,11 @@ class BenchmarkMetricComputeMethod:
         elif metric_compute_method == 'last':
             return metric[-1]
         elif metric_compute_method == 'total':
-            return sum(metric)
+            numWorkers = int(os.getenv('DEEPLEARNING_WORKERS_COUNT','0'))
+            if numWorkers == 0:
+                return sum(metric)
+            else:
+                return 1.0 * sum(metric) / numWorkers
         else:
             raise utils.errors.MetricComputeMethodError("This metric compute method is not supported!")
 
