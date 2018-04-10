@@ -27,7 +27,7 @@ import mxnet as mx
 def _get_lr_scheduler(args, kv):
     if 'lr_factor' not in args or args.lr_factor >= 1:
         return (args.lr, None)
-    epoch_size = args.num_examples / args.batch_size
+    epoch_size = int(args.num_examples / args.batch_size)
     if 'dist' in args.kv_store:
         epoch_size /= kv.num_workers
     begin_epoch = args.load_epoch if args.load_epoch else 0
