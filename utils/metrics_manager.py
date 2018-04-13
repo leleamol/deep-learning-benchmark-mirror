@@ -31,6 +31,8 @@ class BenchmarkMetricComputeMethod:
         elif metric_compute_method == 'average_aggregate':
             assert numWorkers != 0
             return (1.0 * sum(metric) / len(metric)) * numWorkers
+        elif metric_compute_method == 'list_csv':
+            return ','.join(x for x in metric)
         else:
             raise utils.errors.MetricComputeMethodError("This metric compute method is not supported!")
 
