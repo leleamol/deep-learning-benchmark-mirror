@@ -255,21 +255,22 @@ class GluonLearner():
                     logging.info("Epoch {}, Reached early stopping target, stopping training.".format(epoch))
                     break
 
-        # checkpoint final model
-        current_folder = os.path.dirname(os.path.realpath(__file__))
-        checkpoint_folder = os.path.join(current_folder, "..", "logs", "checkpoints")
-        checkpoint_filepath = os.path.join(checkpoint_folder, self.run_id + '.params')
-        self.model.save_params(checkpoint_filepath)
+        # # checkpoint final model
+        # current_folder = os.path.dirname(os.path.realpath(__file__))
+        # checkpoint_folder = os.path.join(current_folder, "..", "logs", "checkpoints")
+        # checkpoint_filepath = os.path.join(checkpoint_folder, self.run_id + '.params')
+        # self.model.save_params(checkpoint_filepath)
 
 
     def predict(self,
               test_data,
               log_frequency=10000):
         logging.info('Starting inference.')
-        current_folder = os.path.dirname(os.path.realpath(__file__))
-        checkpoint_folder = os.path.join(current_folder, "..", "logs", "checkpoints")
-        checkpoint_filepath = os.path.join(checkpoint_folder, self.run_id + '.params')
-        self.model.load_params(checkpoint_filepath, ctx=self.context)
+
+        # current_folder = os.path.dirname(os.path.realpath(__file__))
+        # checkpoint_folder = os.path.join(current_folder, "..", "logs", "checkpoints")
+        # checkpoint_filepath = os.path.join(checkpoint_folder, self.run_id + '.params')
+        # self.model.load_params(checkpoint_filepath, ctx=self.context)
 
         samples_processed = 0
         for batch_idx, (data, label) in enumerate(test_data):
