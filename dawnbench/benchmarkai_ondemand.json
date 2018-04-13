@@ -4,7 +4,10 @@
       "base_ami_id": "ami-2dcceb57",
       "framework_name": "mxnet",
       "framework_version": "nightly_build_gpu_cuda90",
-      "preprocess_command": "git checkout dawnbench",
+      "preprocess_command": "git checkout -b dawnbench origin/dawnbench",
       "metrics_suffix": "_p3_2x",
-      "results_s3_path": "s3://benchmarkai-metrics-test/p3/dawnbench"
+      "results_s3_path": "s3://benchmarkai-metrics-test/p3/dawnbench",
+      "num_gpu": 1,
+      "data_set": "None",
+      "epochs": 185
 }
