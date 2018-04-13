@@ -133,9 +133,10 @@ def benchmark(command_to_execute, metric_patterns,
             command_to_execute,
             shell=True,
             stdout=log_file,
-            stderr=subprocess.STDOUT,
+            stderr=log_file,
             universal_newlines=True,
         )
+
     # when num_gpus == 0, the cpu_gpu_profiler will only profile cpu usage
     with utils.cpu_gpu_profiler.Profiler(cpu_gpu_memory_usage, num_gpus, process.pid):
         process.communicate()
