@@ -21,10 +21,10 @@ if __name__ == "__main__":
 
     batch_size = 128
     train_data, valid_data = Cifar10(batch_size=batch_size,
-                                          data_shape=(3, 32, 32),
-                                          padding=4,
-                                          padding_value=0,
-                                          normalization_type="channel").return_dataiters()
+                                     data_shape=(3, 32, 32),
+                                     padding=4,
+                                     padding_value=0,
+                                     normalization_type="channel").return_dataiters()
 
     lr_schedule = {0: 0.01, 5: 0.1, 95: 0.01, 140: 0.001}
 
@@ -32,9 +32,13 @@ if __name__ == "__main__":
 
     learner = ModuleLearner(model, run_id, gpu_idxs=args.gpu_idxs)
     learner.fit(train_data=train_data,
-                 valid_data=valid_data,
-                 epochs=185,
-                 lr_schedule=lr_schedule,
-                 initializer=mx.init.Xavier(rnd_type='gaussian', factor_type='out', magnitude=2),
-                 optimizer=mx.optimizer.SGD(learning_rate=lr_schedule[0], rescale_grad=1.0/batch_size, momentum=0.9, wd=0.0005),
-                 early_stopping_criteria=lambda e: e >= 0.94) # DAWNBench CIFAR-10 criteria
+                valid_data=valid_data,
+                epochs=185,
+                lr_schedule=lr_schedule,
+                initializer=mx.init.Xavier(rnd_type='gaussian', factor_type='out', magnitude=2),
+                optimizer=mx.optimizer.SGD(learning_rate=lr_schedule[0], rescale_grad=1.0/batch_size, momentum=0.9, wd=0.0005),
+                early_stopping_criteria=lambda e: e >= 0.1) # DAWNBench CIFAR-10 criteria
+
+    _, test_data = Cifar10(batch_size=1, data_shape=(3, 32, 32),
+                           normalization_type="channel").return_dataiters()
+    learner.predict(test_data=test_data, log_frequency=100)

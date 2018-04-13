@@ -175,3 +175,30 @@ class ModuleLearner():
                 if early_stopping_criteria(val_acc):
                     logging.info("Epoch {}, Reached early stopping target, stopping training.".format(epoch))
                     break
+
+    def predict(self,
+              test_data,
+              log_frequency=10000):
+        logging.info('Starting inference.')
+
+        mod = self.module
+        batch_size = test_data.provide_data[0].shape[0]
+        mod.bind(data_shapes=test_data.provide_data, label_shapes=test_data.provide_label)
+
+        samples_processed = 0
+        batch_tick = time.time()
+        for pred, batch_idx, batch in mod.iter_predict(test_data):
+            pred[0].wait_to_read()
+            batch_tock = time.time()
+            # log batch speed (if a multiple of log_frequency is contained in the last batch)
+            log_batch = (samples_processed // log_frequency) != ((samples_processed + batch_size) // log_frequency)
+            warm_up_period = 5
+            if ((batch_idx >= warm_up_period) and log_batch):
+                # batch estimate, not averaged over multiple batches
+                latency = (batch_tock - batch_tick) # seconds
+                speed = batch_size / latency
+                logging.info('Inference. Batch {}, Latency={:.5f} ms, Speed={:.2f} images/second'.format(batch_idx, latency * 1000, speed))
+            samples_processed += batch_size
+            batch_tick = time.time()
+
+        logging.info('Completed inference.')
