@@ -37,7 +37,7 @@ if __name__ == "__main__":
                 lr_schedule=lr_schedule,
                 initializer=mx.init.Xavier(rnd_type='gaussian', factor_type='out', magnitude=2),
                 optimizer=mx.optimizer.SGD(learning_rate=lr_schedule[0], rescale_grad=1.0/batch_size, momentum=0.9, wd=0.0005),
-                early_stopping_criteria=lambda e: e >= 0.1) # DAWNBench CIFAR-10 criteria
+                early_stopping_criteria=lambda e: e >= 0.94) # DAWNBench CIFAR-10 criteria
 
     _, test_data = Cifar10(batch_size=1, data_shape=(3, 32, 32),
                            normalization_type="channel").return_dataloaders()
