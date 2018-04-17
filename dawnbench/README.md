@@ -29,7 +29,7 @@ python dlbench.py checkstatus dawnbench_test_gluon benchmarkai
 python dlbench.py checkstatus dawnbench_test_gluon_hybrid benchmarkai
 python dlbench.py checkstatus dawnbench_test_module benchmarkai
 
-dlbench events --create /Users/tholane/mxnet/deep-learning-benchmark-mirror/dawnbench/experiments/resnet164_basic_gluon_nightly.json benchmarkai
-dlbench events --create /Users/tholane/mxnet/deep-learning-benchmark-mirror/dawnbench/experiments/resnet164_basic_gluon_hybrid_nightly.json benchmarkai
-dlbench events --create /Users/tholane/mxnet/deep-learning-benchmark-mirror/dawnbench/experiments/resnet164_basic_module_nightly.json benchmarkai
+python dlbench.py events --create /Users/tholane/mxnet/deep-learning-benchmark-mirror/dawnbench/experiments/resnet164_basic_gluon_nightly.json benchmarkai
+python dlbench.py events --create /Users/tholane/mxnet/deep-learning-benchmark-mirror/dawnbench/experiments/resnet164_basic_gluon_hybrid_nightly.json benchmarkai
+python dlbench.py events --create /Users/tholane/mxnet/deep-learning-benchmark-mirror/dawnbench/experiments/resnet164_basic_module_nightly.json benchmarkai
 ```
