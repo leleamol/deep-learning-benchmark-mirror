@@ -5,8 +5,10 @@ import os
 def getImagenetData():
     
 
+    os.system('mkdir -p data')
     if not os.path.exists('./data/imagenet1k-train.rec'):
-        os.system("wget -q https://s3.amazonaws.com/ragab-datasets/imagenet2012/imagenet1k-train.rec -P data/")
-
+        os.system("aws s3 cp  s3://imagenet-rec/imagenet1k-train.rec data/")
+    
     if not os.path.exists('./data/imagenet1k-val.rec'):
-        os.system("wget -q https://s3.amazonaws.com/ragab-datasets/imagenet2012/imagenet1k-val.rec -P data/")
+        os.system("aws s3 cp  s3://imagenet-rec/imagenet1k-val.rec data/")
+~
