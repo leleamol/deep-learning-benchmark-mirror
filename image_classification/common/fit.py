@@ -23,13 +23,19 @@ import re
 import math
 import mxnet as mx
 
+def get_epoch_size(args, kv):
+    if 'dist' in args.kv_store:
+        nworkers = kv.num_workers
+    else:
+        nworkers = 1
+    return math.ceil(int(args.num_examples / nworkers) / args.batch_size)
 
 def _get_lr_scheduler(args, kv):
     if 'lr_factor' not in args or args.lr_factor >= 1:
         return (args.lr, None)
-    epoch_size = args.num_examples / args.batch_size
-    if 'dist' in args.kv_store:
-        epoch_size /= kv.num_workers
+    
+    epoch_size = get_epoch_size(args, kv)
+
     begin_epoch = args.load_epoch if args.load_epoch else 0
     if 'pow' in args.lr_step_epochs:
         lr = args.lr
@@ -156,8 +162,17 @@ def fit(args, network, data_loader, **kwargs):
     logging.basicConfig(level=logging.DEBUG, format=head)
     logging.info('start with arguments %s', args)
 
+    epoch_size = get_epoch_size(args, kv)
+
     # data iterators
     (train, val) = data_loader(args, kv)
+
+    if 'dist' in args.kv_store and not 'async' in args.kv_store:
+        logging.info('Resizing training data to %d batches per machine', epoch_size)
+        # resize train iter to ensure each machine has same number of batches per epoch
+        # if not, dist_sync can hang at the end with one machine waiting for other machines
+        train = mx.io.ResizeIter(train, epoch_size)
+    
     if args.test_io:
         tic = time.time()
         for i, batch in enumerate(train):
