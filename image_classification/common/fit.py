@@ -228,13 +228,11 @@ def fit(args, network, data_loader, **kwargs):
     # A limited number of optimizers have a warmup period
     has_warmup = {'lbsgd', 'lbnag'}
     if args.optimizer in has_warmup:
+        
         if 'dist' in args.kv_store:
             nworkers = kv.num_workers
         else:
             nworkers = 1
-        epoch_size = args.num_examples / args.batch_size / nworkers
-        if epoch_size < 1:
-            epoch_size = 1
         macrobatch_size = args.macrobatch_size
         if macrobatch_size < args.batch_size * nworkers:
             macrobatch_size = args.batch_size * nworkers
