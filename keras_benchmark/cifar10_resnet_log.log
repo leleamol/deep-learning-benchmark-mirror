@@ -1,2 +1,0 @@
-[Epoch 0]	time: 219.87 sec	time_step: 140.67 msec/step	speed: 7.11 samples/sec	train_loss: 1.5478	train_acc: 0.4363	val_loss: 1.7928	val_acc: 0.4511	
-[Epoch 1]	time: 202.67 sec	time_step: 129.67 msec/step	speed: 7.71 samples/sec	train_loss: 1.1306	train_acc: 0.6124	val_loss: 1.1815	val_acc: 0.6149	
