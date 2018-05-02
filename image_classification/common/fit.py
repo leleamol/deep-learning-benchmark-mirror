@@ -310,5 +310,8 @@ def fit(args, network, data_loader, **kwargs):
               monitor=monitor)
 
     if args.save_final_model_only and args.model_prefix:
+        dst_dir = os.path.dirname(args.model_prefix)
+        if not os.path.isdir(dst_dir):
+            os.mkdir(dst_dir)
         mx.model.save_checkpoint(args.model_prefix, args.num_epochs, network,
                                  arg_params, aux_params)
