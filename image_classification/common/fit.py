@@ -67,7 +67,7 @@ def _load_model(args, rank=0):
     return (sym, arg_params, aux_params)
 
 def _save_model(args, rank=0):
-    if args.model_prefix is None or args.save_final_model_only:
+    if args.model_prefix is None:
         return None
     dst_dir = os.path.dirname(args.model_prefix)
     if not os.path.isdir(dst_dir):
