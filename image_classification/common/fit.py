@@ -72,8 +72,9 @@ def _save_model(args, rank=0):
     dst_dir = os.path.dirname(args.model_prefix)
     if not os.path.isdir(dst_dir):
         os.mkdir(dst_dir)
+    period = args.num_epochs if args.save_final_model_only else 1
     return mx.callback.do_checkpoint(args.model_prefix if rank == 0 else "%s-%d" % (
-        args.model_prefix, rank))
+        args.model_prefix, rank), period=period)
 
 
 def add_fit_args(parser):
@@ -308,10 +309,3 @@ def fit(args, network, data_loader, **kwargs):
               epoch_end_callback=checkpoint,
               allow_missing=True,
               monitor=monitor)
-
-    if args.save_final_model_only and args.model_prefix:
-        dst_dir = os.path.dirname(args.model_prefix)
-        if not os.path.isdir(dst_dir):
-            os.mkdir(dst_dir)
-        mx.model.save_checkpoint(args.model_prefix, args.num_epochs, network,
-                                 arg_params, aux_params)
