@@ -48,7 +48,10 @@ def _get_lr_scheduler(args, kv):
 
     steps = [epoch_size * (x - begin_epoch)
              for x in step_epochs if x - begin_epoch > 0]
-    return (lr, mx.lr_scheduler.MultiFactorScheduler(step=steps, factor=args.lr_factor))
+    if steps:
+        return (lr, mx.lr_scheduler.MultiFactorScheduler(step=steps, factor=args.lr_factor))
+    else:
+        return (lr, None)
 
 
 def _load_model(args, rank=0):
@@ -63,9 +66,8 @@ def _load_model(args, rank=0):
     logging.info('Loaded model %s_%04d.params', model_prefix, args.load_epoch)
     return (sym, arg_params, aux_params)
 
-
 def _save_model(args, rank=0):
-    if args.model_prefix is None:
+    if args.model_prefix is None or args.save_final_model_only:
         return None
     dst_dir = os.path.dirname(args.model_prefix)
     if not os.path.isdir(dst_dir):
@@ -111,6 +113,7 @@ def add_fit_args(parser):
                        help='show progress for every n batches')
     train.add_argument('--model-prefix', type=str,
                        help='model prefix')
+    train.add_argument('--save-final-model-only', action='store_true', default=False)
     parser.add_argument('--monitor', dest='monitor', type=int, default=0,
                         help='log network parameters every N iters if larger than 0')
     train.add_argument('--load-epoch', type=int,
@@ -237,6 +240,9 @@ def fit(args, network, data_loader, **kwargs):
         if args.network == 'alexnet':
             # AlexNet will not converge using Xavier
             initializer = mx.init.Normal()
+            # VGG will not trend to converge using Xavier-Gaussian
+        elif 'vgg' in args.network:
+            initializer = mx.init.Xavier()
         else:
             initializer = mx.init.Xavier(
                 rnd_type='gaussian', factor_type="in", magnitude=2)
@@ -302,3 +308,7 @@ def fit(args, network, data_loader, **kwargs):
               epoch_end_callback=checkpoint,
               allow_missing=True,
               monitor=monitor)
+
+    if args.save_final_model_only and args.model_prefix:
+        mx.model.save_checkpoint(args.model_prefix, args.num_epochs, network,
+                                 arg_params, aux_params)
