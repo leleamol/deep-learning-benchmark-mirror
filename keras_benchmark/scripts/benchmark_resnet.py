@@ -115,10 +115,6 @@ if args.dataset == "cifar10":
         x_train_mean = np.mean(x_train, axis=0)
         x_train -= x_train_mean
         x_test -= x_train_mean
-    #x_train = x_train[:200]
-    #y_train = y_train[:200]
-    #x_test = x_test[:200]
-    #y_test = y_test[:200]
     print('x_train shape:', x_train.shape)
     print(x_train.shape[0], 'train samples')
     print(x_test.shape[0], 'test samples')
