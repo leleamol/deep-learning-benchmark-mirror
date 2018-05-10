@@ -26,8 +26,13 @@ import logging
 import numpy as np
 from models.resnet import get_resnet_model
 
+# setting backend to MXNet
+os.environ['KERAS_BACKEND'] = 'mxnet'
 import keras
 from keras import backend as K
+K.set_image_data_format('channels_first')
+
+
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras.callbacks import ReduceLROnPlateau
 from keras.datasets import cifar10
