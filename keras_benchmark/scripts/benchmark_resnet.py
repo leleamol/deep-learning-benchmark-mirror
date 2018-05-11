@@ -26,8 +26,10 @@ import logging
 import numpy as np
 from models.resnet import get_resnet_model
 
-# setting backend to MXNet
+# Setting backend to MXNet
 os.environ['KERAS_BACKEND'] = 'mxnet'
+
+# Set to channels_first data_format as keras.json is by default channels_last.
 import keras
 from keras import backend as K
 K.set_image_data_format('channels_first')
