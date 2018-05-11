@@ -93,7 +93,7 @@ else:
 batch_size = 32 * num_gpus if num_gpus > 0 else 32
 epochs = int(args.epoch)
 num_classes = 1000 if args.dataset == "imagenet" else 10
-data_format = K._image_data_format
+data_format = K.image_data_format()
 print('using image format:', data_format)
 # Subtracting pixel mean improves accuracy
 subtract_pixel_mean = True
