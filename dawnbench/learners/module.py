@@ -176,6 +176,26 @@ class ModuleLearner():
                     logging.info("Epoch {}, Reached early stopping target, stopping training.".format(epoch))
                     break
 
+
+    def save(self, prefix):
+        current_folder = os.path.dirname(os.path.realpath(__file__))
+        checkpoint_folder = os.path.realpath(os.path.join(current_folder, "..", "logs", "checkpoints"))
+        checkpoint_filepath = os.path.join(checkpoint_folder, prefix)
+        logging.info("Saved params to " + checkpoint_filepath)
+        self.module.save_checkpoint(checkpoint_filepath, epoch=0)
+        return checkpoint_filepath
+
+
+    def load(self, prefix, data_iter):
+        current_folder = os.path.dirname(os.path.realpath(__file__))
+        checkpoint_folder = os.path.realpath(os.path.join(current_folder, "..", "logs", "checkpoints"))
+        checkpoint_filepath = os.path.join(checkpoint_folder, prefix)
+        batch_size = data_iter.provide_data[0].shape[0]
+        self.module.bind(data_shapes=data_iter.provide_data, label_shapes=data_iter.provide_label)
+        sym, arg_params, aux_params = mx.model.load_checkpoint(checkpoint_filepath, 0)
+        self.module.set_params(arg_params=arg_params, aux_params=aux_params)
+
+
     def predict(self,
               test_data,
               log_frequency=10000):
