@@ -24,11 +24,12 @@ if __name__ == "__main__":
 
     # download model symbol and params (if doesn't already exist)
     for filename in ["resnet164_basic_module-0000.params", "resnet164_basic_module-symbol.json"]:
-        folder = os.path.realpath(os.path.join(os.path.realpath(__file__), "../logs/checkpoints/"))
+        folder = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../logs/checkpoints/"))
         filepath = os.path.join(folder, filename)
         if not os.path.exists(filepath):
             os.system("aws s3 cp s3://benchmark-ai-models/{} {}".format(filename, folder))
             logging.info("Downloading {} to {}".format(filename, folder))
+
 
     model = resnet164Basic(num_classes=10)
     learner = ModuleLearner(model, run_id, gpu_idxs=args.gpu_idxs)
