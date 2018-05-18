@@ -28,6 +28,7 @@ if __name__ == "__main__":
         filepath = os.path.join(folder, filename)
         if not os.path.exists(filepath):
             os.system("aws s3 cp s3://benchmark-ai-models/{} {}".format(filename, folder))
+            logging.info("Downloading {} to {}".format(filename, folder))
 
     model = resnet164Basic(num_classes=10)
     learner = ModuleLearner(model, run_id, gpu_idxs=args.gpu_idxs)
