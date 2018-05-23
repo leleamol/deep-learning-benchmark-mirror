@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="scala-sdk-2.11.8" level="application" />
+    <orderEntry type="module-library">
+      <library name="Maven: ml.dmlc.mxnet:mxnet-full_2.11-osx-x86_64-cpu:1.2.0">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/mxnet/scala-package/assembly/osx-x86_64-cpu/target/mxnet-full_2.11-osx-x86_64-cpu-1.2.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: ml.dmlc.mxnet:mxnet-infer_2.11-osx-x86_64-cpu:1.2.0">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/mxnet/scala-package/infer/target/mxnet-infer_2.11-1.2.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.5" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.5" level="project" />
+  </component>
+</module>
