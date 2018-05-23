@@ -32,5 +32,5 @@ if __name__ == "__main__":
 
     model = resnet164Basic(num_classes=10)
     learner = GluonLearner(model, run_id, gpu_idxs=args.gpu_idxs, hybridize=False)
-    learner.load(filename="resnet164_basic_gluon_hybrid.params")
+    learner.load(filename="resnet164_basic_gluon.params")
     learner.predict(test_data=test_data, log_frequency=100)
