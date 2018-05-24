@@ -3,7 +3,7 @@
 sudo apt-get update
 sudo apt-get install -y maven
 git clone --recursive https://github.com/apache/incubator-mxnet $HOME/incubator-mxnet
-cp scala_benchmark $HOME/
+cp -R scala_benchmark/ $HOME/
 cd $HOME/incubator-mxnet
 make -j4
 make scalapkg
