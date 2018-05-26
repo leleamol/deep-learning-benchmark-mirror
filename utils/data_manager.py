@@ -25,7 +25,7 @@ def getImagenetData(dataset):
         if not os.path.exists(os.path.expanduser('~/data/val-256px-q95.rec')):
             os.system("wget -q https://s3.amazonaws.com/aws-ml-platform-datasets/imagenet/256px-q95/val-256px-q95.rec -P ~/data/")
         if not os.path.exists(os.path.expanduser('~/data/train-256px-q95.rec')):
-            os.system("wget -q https://s3.amazonaws.com/aws-ml-platform-datase	ts/imagenet/256px-q95/train-256px-q95.rec -P ~/data/")
+            os.system("wget -q https://s3.amazonaws.com/aws-ml-platform-datasets/imagenet/256px-q95/train-256px-q95.rec -P ~/data/")
         
     else:
         raise ValueError('Unknown dataset')
