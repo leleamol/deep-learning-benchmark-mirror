@@ -66,17 +66,17 @@ def profile_model(model_path, test_data, context):
     return avg_inference_time
 
 if __name__ == '__main__':
+       from sys import argv
+       ctx = str(argv[1])
+       for directory in os.listdir("./models"):
+           model_dir = os.path.join("./models", directory)
+           if os.path.isdir(model_dir):
+               model_path = os.path.join(model_dir, "model.onnx")
+               test_data = get_model_input(model_dir)
 
-    for ctx in ["gpu","cpu"]:
-        subprocess.call(["./onnx_benchmark/setup.sh",ctx])
-        for directory in os.listdir("./models"):
-            model_dir = os.path.join("./models", directory)
-            if os.path.isdir(model_dir):
-                model_path = os.path.join(model_dir, "model.onnx")
-                test_data = get_model_input(model_dir)
+               profile_data = profile_model(model_path, test_data, ctx)
 
-                profile_data = profile_model(model_path, test_data, ctx)
+               avg_inference_time = profile_model(model_path, test_data, ctx)
 
-                avg_inference_time = profile_model(model_path, test_data, ctx)
+               print('Average_inference_time_{}_{}: {:.9f}'.format(directory, ctx, avg_inference_time))
 
-                print('Average_inference_time_{}_{}: {:.9f}'.format(directory, ctx, avg_inference_time))
