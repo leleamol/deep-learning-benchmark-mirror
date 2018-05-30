@@ -17,12 +17,20 @@ RESULT_FILE_PATH = './dlbenchmark_result.json'
 class BenchmarkMetricComputeMethod:
     @staticmethod
     def compute(metric_compute_method, metric):
+        numWorkers = int(os.getenv('DEEPLEARNING_WORKERS_COUNT', '0'))
+
         if metric_compute_method == 'average':
             return 1.0 * sum(metric) / len(metric)
         elif metric_compute_method == 'last':
             return metric[-1]
         elif metric_compute_method == 'total':
-            return sum(metric)
+            if numWorkers == 0:
+                return sum(metric)
+            else:
+                return 1.0 * sum(metric) / numWorkers
+        elif metric_compute_method == 'average_aggregate':
+            assert numWorkers != 0
+            return (1.0 * sum(metric) / len(metric)) * numWorkers
         else:
             raise utils.errors.MetricComputeMethodError("This metric compute method is not supported!")
 
