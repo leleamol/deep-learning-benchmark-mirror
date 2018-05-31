@@ -6,7 +6,7 @@ import pandas as pd
 from collections import defaultdict
 from threading import Event, Thread
 import psutil
-from errors import CommandExecutionError
+from .errors import CommandExecutionError
 
 
 # redirect the GPU memory usage to a file
