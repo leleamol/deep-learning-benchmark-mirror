@@ -151,7 +151,7 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>ml.dmlc.mxnet</groupId>
+      <groupId>org.apache.mxnet</groupId>
       <artifactId>mxnet-full_${scala.binary.version}-${platform}</artifactId>
       <version>1.2.0</version>
       <scope>system</scope>
@@ -164,7 +164,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>ml.dmlc.mxnet</groupId>
+      <groupId>org.apache.mxnet</groupId>
       <artifactId>mxnet-infer_${scala.binary.version}-${platform}</artifactId>
       <version>1.2.0</version>
       <scope>system</scope>
