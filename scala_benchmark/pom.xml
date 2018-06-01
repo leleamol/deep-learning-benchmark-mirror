@@ -155,7 +155,7 @@
       <artifactId>mxnet-full_${scala.binary.version}-${platform}</artifactId>
       <version>1.2.0</version>
       <scope>system</scope>
-      <systemPath>/home/ubuntu/incubator-mxnet/scala-package/assembly/linux-x86_64-cpu/target/mxnet-full_2.11-linux-x86_64-cpu-1.2.0-SNAPSHOT.jar</systemPath>
+      <systemPath>/home/ubuntu/incubator-mxnet/scala-package/assembly/linux-x86_64-cpu/target/mxnet-full_2.11-linux-x86_64-cpu-1.3.0-SNAPSHOT.jar</systemPath>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -168,7 +168,7 @@
       <artifactId>mxnet-infer_${scala.binary.version}-${platform}</artifactId>
       <version>1.2.0</version>
       <scope>system</scope>
-      <systemPath>/home/ubuntu/incubator-mxnet/scala-package/infer/target/mxnet-infer_2.11-1.2.0-SNAPSHOT.jar</systemPath>
+      <systemPath>/home/ubuntu/incubator-mxnet/scala-package/infer/target/mxnet-infer_2.11-1.3.0-SNAPSHOT.jar</systemPath>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
