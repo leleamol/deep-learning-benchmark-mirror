@@ -113,9 +113,9 @@ def main():
     # logging.getLogger('scripts.common.metrics').setLevel(logging.DEBUG)
     # logging.getLogger('scripts.chainer.trigger').setLevel(logging.DEBUG)
     channel_input_dirs = {
-        'train': 'imagenet/train',
-        'validation': 'imagenet/val',
-        'resources': 'imagenet/resources'
+        'train': '../imagenet/train',
+        'validation': '../imagenet/val',
+        'resources': '../imagenet/resources'
     }
 
     hp = {'epochs': 3, 'training_batch_size': 128, 'validation_batch_size': 128}
