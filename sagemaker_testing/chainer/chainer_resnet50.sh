@@ -1,1 +1,1 @@
-python sagemaker_testing/chainer/imagenet_single_machine.py
+python2 sagemaker_testing/chainer/imagenet_single_machine.py
