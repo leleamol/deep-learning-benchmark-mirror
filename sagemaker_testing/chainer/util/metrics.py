@@ -41,7 +41,7 @@ class MetricsThread(threading.Thread):
 
 
 class Metrics(object):
-    CLOUDWATCH_NAMESPACE = 'SageMakerBenchmarks'
+    CLOUDWATCH_NAMESPACE = 'benchmarkai-metrics-test'
     CLOUDWATCH_METRIC_LIMIT = 20
     PUBLISH_INTERVAL = 60.0
 
@@ -50,7 +50,7 @@ class Metrics(object):
         self.condition = threading.Condition()
         self.metrics = {}
         self.dimensions_list = self.build_dimensions_list(dimensions)
-        self.cloudwatch = boto3.client('cloudwatch', region_name='us-west-2')
+        self.cloudwatch = boto3.client('cloudwatch', region_name='us-east-1')
         self.publisher = MetricsThread(self.PUBLISH_INTERVAL, self.publish)
 
     def build_dimensions_list(self, dimensions):
