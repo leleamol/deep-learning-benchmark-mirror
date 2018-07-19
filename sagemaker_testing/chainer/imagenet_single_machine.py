@@ -13,6 +13,7 @@
 
 import logging
 import os
+import sys
 
 import chainer
 import numpy as np
@@ -84,7 +85,7 @@ def train(hyperparameters, num_gpus, output_data_dir, channel_input_dirs, hosts)
 
     metrics_agent = metrics.Metrics({
         'framework': 'chainer',
-        'framework_version': '4.1.0',
+        'framework_version': chainer.__version__,
         'instance_count': str(len(hosts)),
         'batch_size': str(training_batch_size),
         'instance_type': hyperparameters.get('instance_type', 'unknown'),
@@ -118,7 +119,7 @@ def main():
         'resources': '../imagenet/resources'
     }
 
-    hp = {'epochs': 3, 'training_batch_size': 128, 'validation_batch_size': 128}
+    hp = {'epochs': 100, 'training_batch_size': 128, 'validation_batch_size': 128}
     train(hp, 4, 'output', channel_input_dirs, ['localhost'])
 
 
