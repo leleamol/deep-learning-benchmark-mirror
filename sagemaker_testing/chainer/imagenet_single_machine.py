@@ -119,7 +119,7 @@ def main():
         'resources': '../imagenet/resources'
     }
 
-    hp = {'epochs': 2, 'training_batch_size': 128, 'validation_batch_size': 128}
+    hp = {'epochs': 80, 'training_batch_size': 128, 'validation_batch_size': 128}
     train(hp, 4, 'output', channel_input_dirs, ['localhost'])
 
 
