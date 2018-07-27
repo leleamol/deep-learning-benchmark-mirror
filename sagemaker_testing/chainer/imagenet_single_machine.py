@@ -120,7 +120,7 @@ def main():
     }
 
     hp = {'epochs': 80, 'training_batch_size': 128, 'validation_batch_size': 128}
-    train(hp, 16, 'output', channel_input_dirs, ['localhost'])
+    train(hp, 8, 'output', channel_input_dirs, ['localhost'])
 
 
 if __name__ == '__main__':
