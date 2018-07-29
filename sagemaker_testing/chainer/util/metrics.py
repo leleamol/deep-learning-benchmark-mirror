@@ -41,7 +41,7 @@ class MetricsThread(threading.Thread):
 
 
 class Metrics(object):
-    CLOUDWATCH_NAMESPACE = 'benchmarkai-metrics-test'
+    CLOUDWATCH_NAMESPACE = 'benchmarkai-metrics-prod'
     CLOUDWATCH_METRIC_LIMIT = 20
     PUBLISH_INTERVAL = 60.0
 
