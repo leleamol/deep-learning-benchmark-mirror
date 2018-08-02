@@ -50,7 +50,7 @@ class BenchmarkResultManager(object):
         self.metric_map = {}
         if not os.path.isfile(log_file_location):
             raise Exception("log file was missing!")
-        with open(log_file_location, 'rb') as f:
+        with open(log_file_location) as f:
             self.log_file = f.read()
         assert isinstance(metric_patterns, list), "metric_patterns is expected to be a list."
         assert isinstance(metric_names, list), "metric_names is expected to be a list."
