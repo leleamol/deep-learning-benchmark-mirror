@@ -18,7 +18,7 @@ class BenchmarkMetricComputeMethod:
     @staticmethod
     def compute(metric_compute_method, metric):
         numWorkers = int(os.getenv('DEEPLEARNING_WORKERS_COUNT', '0'))
-
+        metric = list(metric)
         if metric_compute_method == 'average':
             return 1.0 * sum(metric) / len(metric)
         elif metric_compute_method == 'last':
