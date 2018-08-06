@@ -18,7 +18,6 @@ class BenchmarkMetricComputeMethod:
     @staticmethod
     def compute(metric_compute_method, metric):
         numWorkers = int(os.getenv('DEEPLEARNING_WORKERS_COUNT', '0'))
-        metric = list(metric)
         if metric_compute_method == 'average':
             return 1.0 * sum(metric) / len(metric)
         elif metric_compute_method == 'last':
@@ -84,7 +83,7 @@ class BenchmarkResultManager(object):
             metric = re.findall(pattern, self.log_file)
             if len(metric) == 0:
                 raise utils.errors.MetricPatternError("Can not locate provided metric pattern.")
-            metric = map(self.__get_float_number, metric)
+            metric = [self.__get_float_number(x) for x in metric]
             metric_result = BenchmarkMetricComputeMethod.compute(
                 metric_compute_method=self.metric_compute_methods[i],
                 metric=metric
