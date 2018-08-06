@@ -10,4 +10,4 @@ pip install opencv-python
 pip install termcolor
 apt-get update -y && apt-get install -y libsm6 libxext6
 apt-get install -y libfontconfig1 libxrender1
-python tensorpack/examples/ResNet/imagenet-resnet.py --data ~/imagenet --gpu 0,1,2,3,4,5,6,7 -d 50 --data_format 'NHWC' --batch 64
+python tensorpack/examples/ResNet/imagenet-resnet.py --data ~/imagenet --gpu 0,1,2,3,4,5,6,7 -d 50 --data_format 'NHWC' --batch 64 --epochs 10
