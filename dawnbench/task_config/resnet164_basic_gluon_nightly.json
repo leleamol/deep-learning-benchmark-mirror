@@ -1,0 +1,20 @@
+[
+      {
+            "event_name": "dawnbench_cifar10_gluon",
+            "cron": "cron(05 0 ? * * *)",
+            "target_input": {
+                  "task_name": "dawnbench_cifar10_resnet164_basic_gluon",
+                  "instance_type": "p3.2xlarge",
+                  "base_ami_id": "ami-2dcceb57",
+                  "framework_name": "mxnet",
+                  "framework_version": "nightly_build_gpu_cuda90",
+                  "preprocess_command": "git checkout -b dawnbench origin/dawnbench",
+                  "metrics_suffix": "_p3_2x_nightly",
+                  "results_s3_path": "s3://benchmarkai-metrics-prod/p3/dawnbench",
+                  "num_gpu": 1,
+                  "data_set": "None",
+                  "epochs": 185
+            },
+            "state":"DISABLED"
+      }
+]
