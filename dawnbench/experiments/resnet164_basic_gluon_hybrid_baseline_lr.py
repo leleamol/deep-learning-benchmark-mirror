@@ -2,13 +2,15 @@ import mxnet as mx
 import logging
 import os
 import sys
+import numpy as np
+import math
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from arg_parsing import process_args
 from logger import construct_run_id, configure_root_logger
 from data_loaders.cifar10 import Cifar10
 from models.resnet164_basic import resnet164Basic
-from learners.gluon import GluonLearner
+from learners.gluon_iter import GluonLearner
 
 
 if __name__ == "__main__":
@@ -19,21 +21,42 @@ if __name__ == "__main__":
     args = process_args()
     mx.random.seed(args.seed)
 
-    batch_size = 128*4
+    batch_size = 128
     train_data, valid_data = Cifar10(batch_size=batch_size,
                                           data_shape=(3, 32, 32),
                                           padding=4,
                                           padding_value=0,
                                           normalization_type="channel").return_dataloaders()
 
-    lr_schedule = {0: 0.01*4, 1: 0.02*4, 2: 0.04*4, 3: 0.06*4, 4: 0.08*4, 5: 0.1*4, 95: 0.01*4, 140: 0.001*4}
+    lr_schedule = {0: 0.01, 5: 0.1, 95: 0.01, 140: 0.001}
 
     model = resnet164Basic(num_classes=10)
+    learner = GluonLearner(model, run_id, gpu_idxs=args.gpu_idxs, hybridize=True, tensorboard_logging=True)
 
-    learner = GluonLearner(model, run_id, gpu_idxs=args.gpu_idxs, hybridize=True)
+    # learner.find_lr(train_data)
+
+    class CyclicalScheduler():
+        def __init__(self, stepsize, base_lr, max_lr):
+            self.stepsize = stepsize
+            self.base_lr = base_lr
+            self.max_lr = max_lr
+
+        def get(self, epoch):
+            cycle = math.floor(1 + epoch / (2 * self.stepsize))
+            x = abs(epoch / self.stepsize - 2 * cycle + 1)
+            lr = self.base_lr + (self.max_lr - self.base_lr) * max(0, (1 - x))
+            return lr
+
+        def get_schedule(self, epochs):
+            epoch_range = range(epochs)
+            return {e:self.get(e) for e in epoch_range}
+
+    epochs = 185
+    lr_schedule = CyclicalScheduler(stepsize=50, base_lr=0.01, max_lr=0.5).get_schedule(epochs)
+
     learner.fit(train_data=train_data,
                  valid_data=valid_data,
-                 epochs=185,
+                 epochs=epochs,
                  lr_schedule=lr_schedule,
                  initializer=mx.init.Xavier(rnd_type='gaussian', factor_type='out', magnitude=2),
                  optimizer=mx.optimizer.SGD(learning_rate=lr_schedule[0], rescale_grad=1.0/batch_size, momentum=0.9, wd=0.0005),
