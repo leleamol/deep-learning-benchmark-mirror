@@ -87,26 +87,6 @@ def detach(hidden):
     return hidden
 
 
-def eval(data_source, ctx):
-    total_L = 0.0
-    ntotal = 0
-    hidden_states = [
-        model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size/len(ctx), ctx=ctx[i])
-        for i in range(len(ctx))
-    ]
-    for i in range(0, data_source.shape[0] - 1, args.bptt):
-        data_batch, target_batch = get_batch(data_source, i)
-        data = gluon.utils.split_and_load(data_batch, ctx_list=ctx, batch_axis=1)
-        target = gluon.utils.split_and_load(target_batch, ctx_list=ctx, batch_axis=1)
-        for (d, t) in zip(data, target):
-            hidden = hidden_states[d.context.device_id]
-            output, hidden = model(d, hidden)
-            L = loss(output, t.reshape((-1,)))
-            total_L += mx.nd.sum(L).asscalar()
-            ntotal += L.size
-    return total_L / ntotal
-
-
 ###############################################################################
 # Load data and Build the model
 ###############################################################################
@@ -144,6 +124,26 @@ loss = gluon.loss.SoftmaxCrossEntropyLoss()
 ###############################################################################
 # Train the model
 ###############################################################################
+
+def eval(data_source, ctx):
+    total_L = 0.0
+    ntotal = 0
+    hidden_states = [
+        model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size/len(ctx), ctx=ctx[i])
+        for i in range(len(ctx))
+    ]
+    for i in range(0, data_source.shape[0] - 1, args.bptt):
+        data_batch, target_batch = get_batch(data_source, i)
+        data = gluon.utils.split_and_load(data_batch, ctx_list=ctx, batch_axis=1)
+        target = gluon.utils.split_and_load(target_batch, ctx_list=ctx, batch_axis=1)
+        for (d, t) in zip(data, target):
+            hidden = hidden_states[d.context.device_id]
+            output, hidden = model(d, hidden)
+            L = loss(output, t.reshape((-1,)))
+            total_L += mx.nd.sum(L).asscalar()
+            ntotal += L.size
+    return total_L / ntotal
+
 
 def train(epochs, ctx):
     best_val = float("Inf")
@@ -186,8 +186,8 @@ def train(epochs, ctx):
 
             if ibatch % args.log_interval == 0 and ibatch > 0:
                 cur_L = total_L / args.bptt / args.batch_size / args.log_interval
-                logging.info('[Epoch %d Batch %d] loss %.2f, ppl %.2f' % (
-                    epoch, ibatch, cur_L, math.exp(cur_L)))
+                logging.info('[Epoch %d Batch %d/%d] lr %02.2f, loss %.2f, ppl %.2f' % (
+                    epoch, ibatch, len(train_data) // args.bptt, args.lr, cur_L, math.exp(cur_L)))
                 total_L = 0.0
 
         val_L = eval(val_data, ctx)

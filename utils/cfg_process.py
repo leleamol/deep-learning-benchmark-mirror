@@ -26,22 +26,41 @@ def generate_cfg(cfg_template, cfg_path, **infra_spec):
     config.read(cfg_template)
     selected_task = infra_spec['task_name']
     new_config.add_section(selected_task)
+
     for name, value in config.items(selected_task):
         if name != "num_gpus" and name != "command_to_execute":
             new_config.set(selected_task, name, config.get(selected_task, name))
         elif "num_gpus" in infra_spec and name == "num_gpus":
             new_config.set(selected_task, name, infra_spec[name])
- # check for overrides, if any            
+        # check for overrides, if any
         elif name == "command_to_execute":
             cmd = config.get(selected_task, name)
-            if "num_gpus" in infra_spec and infra_spec["num_gpus"] > 0:
-                cmd = re.sub("--gpus \d", "--gpus %d" % infra_spec["num_gpus"], cmd)
-            elif "num_gpus" in infra_spec:
-                cmd = re.sub("--gpus \d", "", cmd)
-            if "epochs" in infra_spec and infra_spec["epochs"] > 0:
-                cmd = re.sub("--epochs \d+", "--epochs %d" % infra_spec["epochs"], cmd)
-            if "kvstore" in infra_spec:
-                cmd = re.sub("--kvstore device", "--kvstore %s" % infra_spec["kvstore"], cmd)
+
+            if "imagenet" in config.get(selected_task, "command_to_execute"):
+                if "num_gpus" in infra_spec and infra_spec["num_gpus"] is not None and infra_spec["num_gpus"] > 0:
+                    cmd = re.sub("--gpus \d+", "--gpus %s" % ','.join([str(i) for i in range(infra_spec["num_gpus"])]), cmd)
+                elif "num_gpus" in infra_spec:
+                    cmd = re.sub("--gpus \d+", "", cmd)
+                if "epochs" in infra_spec and infra_spec["epochs"] is not None and infra_spec["epochs"] > 0:
+                    cmd = re.sub("--num-epochs \d+", "--num-epochs %d" % infra_spec["epochs"], cmd)
+                if "kvstore" in infra_spec:
+                    cmd = re.sub("--kv-store device", "--kv-store %s" % infra_spec["kvstore"], cmd)
+            elif "single_lm_train" in config.get(selected_task, "command_to_execute"):
+                if "num_gpus" in infra_spec and infra_spec["num_gpus"] is not None and infra_spec["num_gpus"] > 0:
+                    cmd = re.sub("--gpus=\d+", "--gpus=%d" % infra_spec["num_gpus"], cmd)
+                elif "num_gpus" in infra_spec:
+                    cmd = re.sub("--gpus=\d+", "", cmd)
+                if "epochs" in infra_spec and infra_spec["epochs"] is not None and infra_spec["epochs"] > 0:
+                    cmd = re.sub("--epochs=\d+", "--epochs=%d" % infra_spec["epochs"], cmd)
+            else:
+                if "num_gpus" in infra_spec and infra_spec["num_gpus"] is not None and infra_spec["num_gpus"] > 0:
+                    cmd = re.sub("--gpus \d+", "--gpus %d" % infra_spec["num_gpus"], cmd)
+                elif "num_gpus" in infra_spec:
+                    cmd = re.sub("--gpus \d+", "", cmd)
+                if "epochs" in infra_spec and infra_spec["epochs"] > 0:
+                    cmd = re.sub("--epochs \d+", "--epochs %d" % infra_spec["epochs"], cmd)
+                if "kvstore" in infra_spec:
+                    cmd = re.sub("--kvstore device", "--kvstore %s" % infra_spec["kvstore"], cmd)
             if "dtype" in infra_spec:
                 cmd = re.sub("--dtype float32", "--dtype %s" % infra_spec["dtype"], cmd)
     
